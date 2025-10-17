@@ -8,7 +8,6 @@
   <meta http-equiv="Expires" content="0" />
   <title>Arrow Hub Media Upload</title>
 
-  <!-- Uploadcare styles -->
   <link
     rel="stylesheet"
     href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.css"
@@ -26,28 +25,31 @@
       justify-content: center;
       min-height: 100vh;
       padding: 24px;
+      text-align: center;
     }
 
     h1 {
       font-size: 22px;
       margin-bottom: 6px;
       font-weight: 700;
-      text-align: center;
     }
 
     p {
       font-size: 14px;
       margin-bottom: 18px;
-      text-align: center;
       color: #666;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     uc-file-uploader-regular {
       width: 100%;
       max-width: 420px;
+      display: flex;
+      justify-content: center;
     }
 
-    /* ✅ Responsive tweaks for mobile */
     @media (max-width: 600px) {
       body {
         padding: 14px;
@@ -82,7 +84,6 @@
 
   <uc-upload-ctx-provider ctx-name="arrowhub"></uc-upload-ctx-provider>
 
-  <!-- JS -->
   <script type="module">
     import * as UC from "https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.js";
     UC.defineComponents(UC);
