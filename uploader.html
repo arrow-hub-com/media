@@ -3,22 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Arrow Hub Media Uploader</title>
+  <title>Arrow Hub Uploader</title>
 
-  <!-- Uploadcare v1 Modern Widget -->
-  <link
-    rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.css"
-  >
-  <script type="module">
-    import * as UC from 'https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.js';
-    UC.defineComponents(UC);
-  </script>
+  <!-- Uploadcare Uploader v1 (standalone build) -->
+  <script src="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.js"></script>
 
   <style>
     body {
-      background: #f9fafc;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: #f8f9fb;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -26,19 +19,19 @@
       margin: 0;
     }
 
-    .uploader-wrap {
+    .wrap {
       background: white;
+      padding: 28px;
       border-radius: 16px;
-      padding: 24px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
       width: 90%;
-      max-width: 420px;
+      max-width: 440px;
       text-align: center;
     }
 
     h1 {
       font-size: 22px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       color: #111;
     }
 
@@ -46,33 +39,28 @@
       color: #555;
       margin-bottom: 20px;
     }
-
-    uc-file-uploader-regular {
-      --uc-color-background: #ffffff;
-      --uc-color-text-default: #111;
-      --uc-button-primary-background: #007aff;
-      --uc-button-primary-color: #fff;
-      --uc-border-radius: 10px;
-      width: 100%;
-    }
   </style>
 </head>
 
 <body>
-  <div class="uploader-wrap">
-    <h1>Upload Your Media</h1>
-    <p>Select <strong>Photo</strong> or <strong>Video</strong> — files upload instantly.</p>
+  <div class="wrap">
+    <h1>Upload your media</h1>
+    <p>Images & videos supported. Copy the URL after upload.</p>
 
     <uc-config
-      ctx-name="my-uploader"
-      source-list="camera, local, gdrive, dropbox"
-      multiple="true"
-      files-view-mode="grid"
+      ctx-name="arrow-uploader"
       pubkey="523f4ab5de66c584fd10"
+      source-list="local, camera, gdrive"
+      files-view-mode="grid"
+      multiple="true"
     ></uc-config>
 
-    <uc-file-uploader-regular ctx-name="my-uploader"></uc-file-uploader-regular>
-    <uc-upload-ctx-provider ctx-name="my-uploader"></uc-upload-ctx-provider>
+    <uc-file-uploader-regular
+      ctx-name="arrow-uploader"
+      class="uc-light"
+    ></uc-file-uploader-regular>
+
+    <uc-upload-ctx-provider ctx-name="arrow-uploader"></uc-upload-ctx-provider>
   </div>
 </body>
 </html>
