@@ -2,63 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Arrow Hub Uploader</title>
 
-  <!-- Uploadcare v1 styles (for the modern UI) -->
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.css">
-
-  <!-- Uploadcare v1 web component (non-module build so it runs in Glide) -->
-  <script src="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.js"></script>
-  <script>
-    // Define the custom elements so <uc-file-uploader-regular> renders
-    (function () {
-      if (window.UC && typeof window.UC.defineComponents === "function") {
-        window.UC.defineComponents(window.UC);
-      }
-    })();
-  </script>
+  <!-- Uploadcare v3 (classic) widget + panel CSS -->
+  <link rel="stylesheet" href="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.css">
+  <link rel="stylesheet" href="https://ucarecdn.com/libs/widget/3.x/uploadcare.panel.min.css">
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
 
   <style>
     :root { color-scheme: light dark; }
     body {
-      background: #f6f7fb;
       margin: 0; padding: 24px;
+      background: #f6f7fb;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      display: grid; place-items: center; min-height: 100vh;
+      display: grid; place-items: start center; min-height: 100vh;
     }
     .wrap {
-      width: min(92vw, 480px);
-      background: #fff; border-radius: 16px;
+      width: min(92vw, 560px);
+      background: #fff;
+      border-radius: 16px;
       box-shadow: 0 10px 30px rgba(0,0,0,.06);
-      padding: 24px 20px;
+      padding: 20px;
     }
     h1 { margin: 0 0 6px; font-size: 22px; color: #111; text-align: center; }
-    p  { margin: 0 0 18px; color: #555; text-align: center; }
+    p  { margin: 0 0 16px; color: #555; text-align: center; }
+
+    .links {
+      margin-top: 14px;
+      background: #fafbff;
+      border: 1px solid #e8e9f3;
+      border-radius: 12px;
+      padding: 12px;
+      font-size: 14px;
+      max-height: 190px; overflow: auto;
+    }
+    .links a { display:block; word-break: break-all; margin: 8px 0; color:#2b6cb0; text-decoration:none; }
+    .links a:hover { text-decoration:underline; }
+    .hint { font-size: 12px; color: #666; margin-top: 6px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <h1>Upload your media</h1>
-    <p>Images &amp; videos supported. Copy the URL after upload.</p>
+    <p>Images &amp; videos supported. Copy the URL under each file after upload.</p>
 
-    <!-- Global config for this uploader instance -->
-    <uc-config
-      ctx-name="arrow-uploader"
-      pubkey="523f4ab5de66c584fd10"
-      source-list="local, camera, gdrive"
-      files-view-mode="grid"
-      multiple="true">
-    </uc-config>
+    <!-- Inline panel mounts here -->
+    <div id="uploader"></div>
 
-    <!-- The nice modern Uploadcare panel -->
-    <uc-file-uploader-regular
-      ctx-name="arrow-uploader"
-      class="uc-light">
-    </uc-file-uploader-regular>
-
-    <uc-upload-ctx-provider ctx-name="arrow-uploader"></uc-upload-ctx-provider>
+    <!-- Where we list the uploaded URLs for copy/paste -->
+    <div class="links" id="links" hidden>
+      <strong>Uploaded links</strong>
+      <div id="list"></div>
+      <div class="hint">Tip: tap and hold a link to copy it.</div>
+    </div>
   </div>
+
+  <script>
+    // Your public key
+    UPLOADCARE_PUBLIC_KEY = "523f4ab5de66c584fd10";
+
+    // Build an inline panel (not a modal) so it looks like Uploadcare’s demo
+    const panel = uploadcare.buildPanel('#uploader', {
+      multiple: true,
+      tabs: 'file camera gdrive',     // sources shown
+      preferredTypes: 'images video', // label hints
+      imagesOnly: false,
+      previewStep: false
+    });
+
+    const linksBox = document.getElementById('links');
+    const list = document.getElementById('list');
+
+    function addLink(url, name) {
+      linksBox.hidden = false;
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.textContent = name ? `${name} → ${url}` : url;
+      list.appendChild(a);
+    }
+
+    // Single file completed
+    panel.onUploadComplete(function (fileInfo) {
+      if (fileInfo && fileInfo.cdnUrl) addLink(fileInfo.cdnUrl, fileInfo.name);
+    });
+
+    // Group (multiple) completed
+    panel.onUploadCompleteGroup(function (groupInfo) {
+      try {
+        // List each file URL
+        groupInfo.files().forEach(function (f) {
+          if (f.cdnUrl) addLink(f.cdnUrl, f.name);
+        });
+        // Optional: also show the group URL
+        if (groupInfo.cdnUrl) addLink(groupInfo.cdnUrl, '(group URL)');
+      } catch (e) { /* ignore */ }
+    });
+  </script>
 </body>
 </html>
