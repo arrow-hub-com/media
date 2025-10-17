@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Arrow Hub Uploader</title>
+
+  <!-- Uploadcare Widget -->
+  <script>
+    /* Replace this with your full public key if the widget doesn't initialize */
+    window.UPLOADCARE_PUBLIC_KEY = "523f4ab5de";
+    window.UPLOADCARE_LOCALE = "en";
+    /* Tabs available to users */
+    window.UPLOADCARE_TABS = "file camera url gdrive";
+    /* Allow images and videos */
+    window.UPLOADCARE_IMAGES_ONLY = false;
+    /* Show editor/preview */
+    window.UPLOADCARE_PREVIEW_STEP = true;
+    /* Let users clear selections */
+    window.UPLOADCARE_CLEARABLE = true;
+  </script>
+  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --card:#f7f9fb;
+      --text:#0b0b0b;
+      --muted:#667085;
+      --brand:#0f6c83;
+      --border:#e6edf2;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      line-height:1.45;
+      -webkit-font-smoothing:antialiased;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--border);
+    }
+    header .dot{
+      width:10px;height:10px;border-radius:50%;background:var(--brand);
+    }
+    header h1{font-size:18px;margin:0}
+    main{
+      max-width:880px;
+      margin:0 auto;
+      padding:16px;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:16px;
+      box-shadow:0 0 0 1px rgba(15,108,131,0.03);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+    @media (min-width: 760px){
+      .grid{ grid-template-columns:1.2fr 1fr; }
+    }
+    .section-title{
+      font-weight:600;margin:4px 0 8px 0;
+    }
+    /* Make the Uploadcare button big & tappable */
+    .uc-btn{ font-size:16px !important; padding:12px 16px !important; }
+    .helper{font-size:12px;color:var(--muted);margin-top:6px}
+    .urls{
+      display:flex;flex-direction:column;gap:8px;max-height:320px;overflow:auto;
+      background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px;
+    }
+    .url-item{
+      display:flex;align-items:center;gap:8px;
+      padding:8px;border:1px solid var(--border);border-radius:10px;background:#fbfdff;
+      word-break:break-all;
+    }
+    .url-item button{
+      margin-left:auto;background:var(--brand);color:#fff;border:none;border-radius:8px;
+      padding:8px 10px;cursor:pointer;font-size:12px;
+    }
+    .controls{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+    .btn{
+      background:var(--brand);
+      color:#fff;border:none;border-radius:10px;
+      padding:10px 14px;cursor:pointer;font-weight:600;
+    }
+    .btn.secondary{background:#333}
+    .pill{
+      display:inline-block;background:#e6f3f6;color:#055364;
+      border:1px solid #c9e3ea;padding:2px 8px;border-radius:999px;
+      font-size:12px;margin-left:8px
+    }
+    .meta{font-size:12px;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="dot"></div>
+    <h1>Arrow Hub Uploader <span class="pill">Light</span></h1>
+  </header>
+
+  <main>
+    <div class="card">
+      <div class="grid">
+        <section>
+          <div class="section-title">Upload images & videos</div>
+          <!-- Uploadcare widget input -->
+          <input type="hidden"
+                 role="uploadcare-uploader"
+                 id="uploader"
+                 data-multiple="true"
+                 data-multiple-max="100"
+                 data-source-list="local,camera,url,gdrive"
+                 data-preview-step="true"
+                 data-images-only="false"
+                 data-image-shrink="1600x1600"
+                 data-image-quality="85"
+          />
+          <div class="helper">Sources: device, camera, URL, Google Drive. EXIF is stripped by the CDN by default.</div>
+        </section>
+
+        <section>
+          <div class="section-title">Uploaded file URLs</div>
+          <div id="urls" class="urls" aria-live="polite" aria-label="Uploaded URLs list"></div>
+          <div class="controls">
+            <button class="btn" id="copyAll">Copy all</button>
+            <button class="btn secondary" id="clearAll">Clear</button>
+          </div>
+          <p class="meta" id="metaNote">Tip: paste these URLs into your Glide “Add media” form (one per row for MVP).</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const urlsBox = document.getElementById('urls');
+    const copyAllBtn = document.getElementById('copyAll');
+    const clearAllBtn = document.getElementById('clearAll');
+    const allUrls = [];
+
+    function addUrl(url){
+      allUrls.push(url);
+      const row = document.createElement('div');
+      row.className = 'url-item';
+      const span = document.createElement('span');
+      span.textContent = url;
+      const copy = document.createElement('button');
+      copy.textContent = 'Copy';
+      copy.addEventListener('click', () => {
+        navigator.clipboard.writeText(url).then(() => {
+          copy.textContent = 'Copied';
+          setTimeout(()=> copy.textContent='Copy', 1200);
+        });
+      });
+      row.appendChild(span);
+      row.appendChild(copy);
+      urlsBox.appendChild(row);
+    }
+
+    // Initialize widget and listen for completes (single file or groups)
+    const widget = uploadcare.Widget('#uploader');
+
+    widget.onUploadComplete(async (fileOrGroup) => {
+      try {
+        if (fileOrGroup && typeof fileOrGroup.files === 'function') {
+          // File Group (multiple selection in one go)
+          const files = await fileOrGroup.files();
+          for (const promise of files) {
+            const f = await promise;
+            if (f && f.cdnUrl) addUrl(f.cdnUrl);
+          }
+        } else {
+          // Single file
+          if (fileOrGroup && fileOrGroup.cdnUrl) addUrl(fileOrGroup.cdnUrl);
+        }
+        copyAllBtn.disabled = allUrls.length === 0;
+        clearAllBtn.disabled = allUrls.length === 0;
+      } catch (e) {
+        console.error(e);
+        alert('Uploaded, but could not list URLs. Please try again.');
+      }
+    });
+
+    copyAllBtn.addEventListener('click', async () => {
+      if (!allUrls.length) return;
+      try {
+        await navigator.clipboard.writeText(allUrls.join('\n'));
+        copyAllBtn.textContent = '✅ Copied';
+        setTimeout(()=> copyAllBtn.textContent='Copy all', 1400);
+      } catch {
+        alert('Copy failed — select and copy manually.');
+      }
+    });
+
+    clearAllBtn.addEventListener('click', () => {
+      allUrls.length = 0;
+      urlsBox.innerHTML = '';
+    });
+  </script>
+</body>
+</html>
