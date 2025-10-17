@@ -1,22 +1,64 @@
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.css"
->
-<script type="module">
-  import * as UC from 'https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.js';
-  UC.defineComponents(UC);
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Arrow Hub — Media Uploader</title>
 
-<uc-config
-  ctx-name="my-uploader"
-  source-list="local, camera, gdrive"
-  files-view-mode="grid"
-  pubkey="523f4ab5de66c584fd10"
-></uc-config>
+  <!-- Uploadcare File Uploader (modern) -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@latest/dist/file-uploader.min.js"></script>
 
-<uc-file-uploader-regular
-  ctx-name="my-uploader"
-  class="uc-light"
-></uc-file-uploader-regular>
+  <style>
+    /* Light, clean look (no black slab) */
+    :root {
+      --bg:#f6f7fb; --card:#ffffff; --text:#111827; --muted:#6b7280; --brand:#2563eb;
+    }
+    html,body{height:100%}
+    body{
+      margin:0; background:var(--bg); color:var(--text);
+      font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      display:grid; place-items:center; padding:24px;
+    }
+    .wrap{
+      width:min(960px,95vw);
+      background:var(--card);
+      border-radius:16px;
+      box-shadow:0 8px 30px rgba(17,24,39,.08);
+      padding:24px;
+      min-height:560px;         /* makes it feel “present” in Glide */
+    }
+    h1{margin:0 0 6px; font-size:20px}
+    p.note{margin:0 0 16px; color:var(--muted)}
+    /* match Uploadcare to our palette */
+    uc-file-uploader{
+      --uc-color-primary: var(--brand);
+      --uc-color-text: #111827;
+      --uc-color-background: #ffffff;
+      --uc-color-panel: #f3f4f6;
+      width:100%;
+      height: 480px;            /* visible area */
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Upload your media</h1>
+    <p class="note">Images & videos supported. Copy the URL shown under each file after upload.</p>
 
-<uc-upload-ctx-provider ctx-name="my-uploader"></uc-upload-ctx-provider>
+    <!-- Key switches:
+         • output-file-url → shows a copyable URL per file (no custom JS needed)
+         • multiple / multiple-max → control count
+         • file-types → images + videos (change to image/* if you want only images)
+         • source-list → remove what you don’t want -->
+    <uc-file-uploader
+      pubkey="523f4ab5de66c584fd10"
+      multiple
+      output-file-url
+      file-types="image/*,video/*"
+      source-list="local, camera, gdrive, url"
+      image-editor
+      locale="en"
+    ></uc-file-uploader>
+  </div>
+</body>
+</html>
