@@ -1,60 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Arrow Hub Uploader</title>
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.css"
+>
+<script type="module">
+  import * as UC from 'https://cdn.jsdelivr.net/npm/@uploadcare/file-uploader@1/web/uc-file-uploader-regular.min.js';
+  UC.defineComponents(UC);
+</script>
 
-  <script src="https://ucarecdn.com/libs/widget/3.x/uploadcare.full.min.js"></script>
+<uc-config
+  ctx-name="my-uploader"
+  source-list="local, camera, gdrive"
+  files-view-mode="grid"
+  pubkey="523f4ab5de66c584fd10"
+></uc-config>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: #f5f7fb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      color: #111;
-    }
-    .wrap {
-      background: #fff;
-      border-radius: 14px;
-      padding: 30px 40px;
-      max-width: 420px;
-      text-align: center;
-      box-shadow: 0 6px 24px rgba(0,0,0,0.08);
-    }
-    h1 {
-      margin: 0 0 12px;
-      font-size: 22px;
-    }
-    p {
-      margin: 10px 0 20px;
-      color: #666;
-      font-size: 15px;
-    }
-    input[role="uploadcare-uploader"] {
-      margin: 10px auto;
-    }
-  </style>
-</head>
+<uc-file-uploader-regular
+  ctx-name="my-uploader"
+  class="uc-light"
+></uc-file-uploader-regular>
 
-<body>
-  <div class="wrap">
-    <h1>Upload Your Media</h1>
-    <p>Images or videos supported — copy your direct link into Arrow Hub when done.</p>
-
-    <input
-      type="hidden"
-      role="uploadcare-uploader"
-      data-public-key="523f4ab5de66c584fd10"
-      data-multiple="true"
-      data-tabs="file camera url gdrive"
-      data-multiple-max="50"
-      data-images-only="false"
-    />
-  </div>
-</body>
-</html>
+<uc-upload-ctx-provider ctx-name="my-uploader"></uc-upload-ctx-provider>
